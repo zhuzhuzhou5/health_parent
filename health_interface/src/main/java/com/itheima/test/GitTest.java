@@ -11,5 +11,6 @@ public class GitTest {
         System.out.println("g1");
         System.out.println("g1");
         System.out.println("g1");
+        System.out.println("g4");
     }
 }
