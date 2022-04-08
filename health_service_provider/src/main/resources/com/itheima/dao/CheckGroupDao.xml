@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itheima.dao.CheckGroupDao">
+<!--
+    void add(CheckGroup checkGroup);
+    新知识点  <selectKey>
+    LAST_INSERT_ID() 获取自增的id
+    order="AFTER" 先执行添加的语句，再获取当前添加语句的id
+         keyProperty="id"对应checkgroup主键 并且被查询到的id赋值
+
+-->
+    <insert id="add" parameterType="com.itheima.pojo.CheckGroup">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            select LAST_INSERT_ID()
+        </selectKey>
+       insert into t_checkgroup(code,name,sex,helpCode,remark,attention)
+        values
+            (#{code},#{name},#{sex},#{helpCode},#{remark},#{attention})
+    </insert>
+<!--
+    void setCheckGroupAndCheckItem(Map map);
+    添加一个检查组与检查项多对多关联的语句
+-->
+    <insert id="setCheckGroupAndCheckItem" parameterType="hashmap">
+        insert into t_checkgroup_checkitem(checkgroup_id,checkitem_id)
+        value
+        (#{checkgroup_id},#{checkitem_id})
+    </insert>
+<!--
+    Page<CheckGroup> findByCondition(String queryString);
+    //与之前一样的过滤条件可有可无
+-->
+    <select id="findByCondition" parameterType="string" resultType="com.itheima.pojo.CheckGroup">
+        select  * from t_checkgroup
+        <if test="value != null and value.length>0 and value !=''">
+            where code = #{value} or name =#{value} or helpCode =#{value}
+        </if>
+    </select>
+<!--
+    CheckGroup findById(Integer id);
+    根据检查组id查询关联的检查项
+-->
+    <select id="findById" resultType="com.itheima.pojo.CheckGroup" parameterType="int">
+        select *from t_checkgroup where id = #{id}
+    </select>
+    
+<!--    
+   List<Integer> findCheckItemIdsByCheckGroupId(Integer id);
+-->
+    <select id="findCheckItemIdsByCheckGroupId" parameterType="int" resultType="int">
+        select checkitem_id from t_checkgroup_checkitem where checkgroup_id = #{id}
+    </select>
+<!--    void edit(CheckGroup checkGroup);
+          根据ID动态修改检查组相关字段
+-->
+    <update id="edit" parameterType="com.itheima.pojo.CheckGroup">
+        update t_checkgroup
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="sex != null">
+                sex = #{sex},
+            </if>
+            <if test="code != null">
+                code = #{code},
+            </if>
+            <if test="helpCode != null">
+                helpCode = #{helpCode},
+            </if>
+            <if test="attention != null">
+                attention = #{attention},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+<!--    void deleteAssocication(Integer id);
+ 根据检测组ID清理关联的检查项信息，操作的表t_checkgroup_checkitem
+ 根据检查组id删除中间表数据（清理原有关联关系）
+ -->
+    <delete id="deleteAssocication" parameterType="int">
+        delete from  t_checkgroup_checkitem where checkgroup_id = #{id}
+    </delete>
+<!--
+    void delete(Integer id);
+    根据ID删除检查组
+-->
+    <delete id="delete" parameterType="int">
+        delete  from t_checkgroup where id = #{id}
+    </delete>
+<!--
+    List<CheckGroup> findAll();
+-->
+    <select id="findAll" resultType="com.itheima.pojo.CheckGroup">
+        select * from t_checkgroup
+    </select>
+</mapper>
