@@ -65,7 +65,7 @@ public class SetmealServiceImpl implements SetmealService{
         String queryString = queryPageBean.getQueryString();
         PageHelper.startPage(currentPage,pageSize);
         Page<Setmeal> page = setmealDao.findByCondition(queryString);
-
+        System.out.println("20221127");
         return new PageResult(page.getTotal(),page.getResult());
     }
 
